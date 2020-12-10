@@ -3,6 +3,7 @@ package com.example.login_with_firebase;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -37,14 +38,20 @@ public class MainActivity extends AppCompatActivity {
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (edtEmail.getText().toString().isEmpty() || edtPassword.getText().toString().isEmpty()){
+                    if (isSigningUp && edtUsername.getText().toString().isEmpty()){
+                        Toast.makeText(MainActivity.this, "Invalid Input", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
                 if (isSigningUp){
-                    SigningUp();
+                    handleSigningUp();
                 }else {
-                    Login();
+                    handleLogin();
                 }
             }
         });
-
+//Only switch button Loging and sign up button
         textLoginInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,8 +68,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        //================================================================================//
     }
-    private void SigningUp(){
+    private void handleSigningUp(){
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(edtEmail.getText().toString(),edtPassword.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -75,12 +83,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void Login(){
+    private void handleLogin(){
         FirebaseAuth.getInstance().signInWithEmailAndPassword(edtEmail.getText().toString(),edtPassword.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()){
                     Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MainActivity.this, Display.class);
+                    startActivity(intent);
                 }else {
                     Toast.makeText(MainActivity.this,task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 }
